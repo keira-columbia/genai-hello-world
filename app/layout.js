@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "Hello World",
-  description: "My first Next.js app",
+  description: "Hello World",
 };
 
 export default function RootLayout({ children }) {
