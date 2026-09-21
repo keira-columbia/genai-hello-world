@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Reading List",
-  description: "Books from Supabase",
+  title: "Largest Countries by Area",
+  description: "Countries and capitals from Supabase",
 };
 
 export default function RootLayout({ children }) {

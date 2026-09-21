@@ -8,9 +8,9 @@ export default async function Home() {
     throw new Error("Supabase environment variables are missing.");
   }
 
-  const endpoint = new URL("/rest/v1/books", url);
-  endpoint.searchParams.set("select", "id,title,author");
-  endpoint.searchParams.set("order", "id.asc");
+  const endpoint = new URL("/rest/v1/countries", url);
+  endpoint.searchParams.set("select", "country,capital,area_sq_km");
+  endpoint.searchParams.set("order", "area_sq_km.desc");
 
   const response = await fetch(endpoint, {
     headers: { apikey: key },
@@ -18,22 +18,23 @@ export default async function Home() {
   });
 
   if (!response.ok) {
-    throw new Error("Could not load books from Supabase.");
+    throw new Error("Could not load countries from Supabase.");
   }
 
-  const books = await response.json();
+  const countries = await response.json();
 
   return (
     <main>
-      <h1>Reading List</h1>
-      {books.length === 0 ? (
-        <p>No books yet.</p>
+      <h1>Largest Countries by Area</h1>
+      {countries.length === 0 ? (
+        <p>No countries yet.</p>
       ) : (
         <ul>
-          {books.map((book) => (
-            <li key={book.id}>
-              <strong>{book.title}</strong>
-              <span>{book.author}</span>
+          {countries.map((item) => (
+            <li key={item.country}>
+              <strong>{item.country}</strong>
+              <span>Capital: {item.capital}</span>
+              <span>Area: {item.area_sq_km.toLocaleString()} km²</span>
             </li>
           ))}
         </ul>
