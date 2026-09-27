@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { createClient } from "../lib/supabase/server";
+
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
@@ -22,9 +25,15 @@ export default async function Home() {
   }
 
   const countries = await response.json();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   return (
     <main>
+      <nav className="page-nav">
+        <span>Country Explorer</span>
+        <Link href={user ? "/profile" : "/login"}>{user ? "Profile" : "Sign in"}</Link>
+      </nav>
       <h1>Largest Countries by Area</h1>
       {countries.length === 0 ? (
         <p>No countries yet.</p>

@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "Largest Countries by Area",
-  description: "Countries and capitals from Supabase",
+  description: "Countries, authentication, and profiles with Supabase",
 };
 
 export default function RootLayout({ children }) {
