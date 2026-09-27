@@ -3,6 +3,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { signOut } from "../auth/actions";
 import { updateProfile } from "./actions";
+import { createAdminClient } from "../../lib/supabase/admin";
 import { createClient } from "../../lib/supabase/server";
 
 export default async function ProfilePage({ searchParams }) {
@@ -11,7 +12,8 @@ export default async function ProfilePage({ searchParams }) {
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const admin = createAdminClient();
+  const { data: profile } = await admin
     .from("profiles")
     .select("first_name,last_name,avatar_url")
     .eq("id", user.id)
