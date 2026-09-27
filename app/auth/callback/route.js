@@ -10,18 +10,7 @@ export async function GET(request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("first_name,last_name")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      const destination = profile?.first_name && profile?.last_name
-        ? "/profile"
-        : "/profile?welcome=1";
-
-      return NextResponse.redirect(`${origin}${destination}`);
+      return NextResponse.redirect(`${origin}/profile`);
     }
   }
 

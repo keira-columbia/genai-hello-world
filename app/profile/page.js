@@ -35,7 +35,7 @@ export default async function ProfilePage({ searchParams }) {
         <h1>Your profile</h1>
         <p className="muted">Signed in as {user.email}</p>
 
-        {(params?.welcome || needsName) && (
+        {needsName && (
           <p className="message">Please add your first and last name.</p>
         )}
         {params?.saved && <p className="message success">Profile saved.</p>}
