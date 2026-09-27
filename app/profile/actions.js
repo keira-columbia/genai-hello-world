@@ -15,6 +15,7 @@ export async function updateProfile(formData) {
   const lastName = formData.get("lastName")?.toString().trim() || null;
   const photo = formData.get("photo");
   let avatarUrl = formData.get("currentAvatar")?.toString() || null;
+  const admin = createAdminClient();
 
   if (photo && photo.size > 0) {
     if (!photo.type.startsWith("image/")) {
@@ -27,7 +28,6 @@ export async function updateProfile(formData) {
 
     const extension = photo.name.split(".").pop()?.toLowerCase() || "jpg";
     const path = `${user.id}/avatar-${Date.now()}.${extension}`;
-    const admin = createAdminClient();
     const { error: uploadError } = await admin.storage
       .from("avatars")
       .upload(path, photo, { contentType: photo.type, upsert: true });
@@ -40,7 +40,7 @@ export async function updateProfile(formData) {
     avatarUrl = data.publicUrl;
   }
 
-  const { error } = await supabase.from("profiles").upsert({
+  const { error } = await admin.from("profiles").upsert({
     id: user.id,
     first_name: firstName,
     last_name: lastName,
