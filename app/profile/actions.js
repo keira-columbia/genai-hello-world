@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createAdminClient } from "../../lib/supabase/admin";
 import { createClient } from "../../lib/supabase/server";
 
 export async function updateProfile(formData) {
@@ -15,10 +14,8 @@ export async function updateProfile(formData) {
   const lastName = formData.get("lastName")?.toString().trim() || null;
   const photo = formData.get("photo");
   let avatarUrl = formData.get("currentAvatar")?.toString() || null;
-  const admin = createAdminClient();
-
   if (photo && photo.size > 0) {
-    if (!photo.type.startsWith("image/")) {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(photo.type)) {
       redirect("/profile?error=Please%20choose%20an%20image%20file");
     }
 
@@ -28,7 +25,7 @@ export async function updateProfile(formData) {
 
     const extension = photo.name.split(".").pop()?.toLowerCase() || "jpg";
     const path = `${user.id}/avatar-${Date.now()}.${extension}`;
-    const { error: uploadError } = await admin.storage
+    const { error: uploadError } = await supabase.storage
       .from("avatars")
       .upload(path, photo, { contentType: photo.type, upsert: true });
 
@@ -36,17 +33,16 @@ export async function updateProfile(formData) {
       redirect(`/profile?error=${encodeURIComponent(uploadError.message)}`);
     }
 
-    const { data } = admin.storage.from("avatars").getPublicUrl(path);
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
     avatarUrl = data.publicUrl;
   }
 
-  const { error } = await admin.from("profiles").upsert({
-    id: user.id,
+  const { error } = await supabase.from("profiles").update({
     first_name: firstName,
     last_name: lastName,
     avatar_url: avatarUrl,
     updated_at: new Date().toISOString(),
-  });
+  }).eq("id", user.id);
 
   if (error) {
     redirect(`/profile?error=${encodeURIComponent(error.message)}`);

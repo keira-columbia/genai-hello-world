@@ -1,21 +1,30 @@
-# Country Explorer
+# Campus Survival Map
 
-A Next.js app that lists countries from Supabase and includes Google sign-in, profiles, photo uploads, and a protected page.
-Area figures are from [Statistics Canada](https://www150.statcan.gc.ca/n1/pub/11-402-x/2009/4017_3119/tbl/cybac4017_3119_2009_000_t06-eng.htm).
+Campus Survival Map is a Next.js app for sharing the small disasters and victories of student life. Signed-in users upload a campus moment, Gemini describes the image and generates four caption choices, and the community votes for the caption that best belongs in the archive.
 
-## Supabase setup
+## Core flow
 
-1. Create a Supabase project.
-2. Run `supabase/countries.sql` and `supabase/profiles.sql` in the project's SQL Editor.
-3. Copy `.env.example` to `.env.local` and add the Supabase project URL, publishable key, and server-only secret key.
-4. Add the same environment variables to the Vercel project for Production.
-5. Enable Google in Supabase Auth and add `/auth/callback` to the redirect URLs.
+1. Anyone can browse the public survival map and open a field report.
+2. Google authentication protects generation, voting, profiles, and the private activity record.
+3. A signed-in user uploads an image with a location, context, and humor style.
+4. Gemini first creates a factual visual description, then uses that description to write four captions.
+5. The image, prompts, model names, description, and captions are saved in Supabase.
+6. Each signed-in user can choose one caption per report and can change that vote.
 
-## Run locally
+## Local setup
+
+1. Run `supabase/profiles.sql`, then `supabase/assignment4.sql` in the Supabase SQL Editor.
+2. Copy `.env.example` to `.env.local` and add the Supabase project values and a Gemini API key.
+3. Enable Google authentication in Supabase and use `/auth/callback` as the app callback route.
+4. Install and run the app:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000 to view the app.
+Open [http://localhost:3000](http://localhost:3000).
+
+## Security
+
+Row Level Security is enabled on every public application table. Public visitors receive read access to the archive. Authenticated users can update only their own profile, create only their own reports, upload only to their own storage folder, and create or change only their own votes. Gemini and Supabase server secrets remain in environment variables.
