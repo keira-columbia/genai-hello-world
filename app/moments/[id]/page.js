@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteHeader from "../../../components/SiteHeader";
@@ -31,7 +30,7 @@ export default async function MomentPage({ params, searchParams }) {
       <section className="case-layout">
         <div className="evidence-panel">
           <div className="evidence-head"><span>PHOTO EVIDENCE</span><span>{moment.zone.toUpperCase()}</span></div>
-          <div className="evidence-photo"><Image src={moment.image_url} alt={moment.title} fill sizes="(max-width: 800px) 100vw, 50vw" unoptimized /></div>
+          <div className="evidence-photo"><img src={moment.image_url} alt={moment.title} /></div>
           <div className="ai-observation"><span>AI VISUAL SCAN</span><p>{moment.image_description}</p></div>
         </div>
         <div className="verdict-panel">
