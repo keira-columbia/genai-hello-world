@@ -28,18 +28,20 @@ function ratingSummary(momentId, ratings) {
 
 export default async function Home() {
   const supabase = await createClient();
-  const [{ data: { user } }, momentsResult, captionsResult, votesResult, ratingsResult] = await Promise.all([
+  const [{ data: { user } }, momentsResult, captionsResult, votesResult, ratingsResult, profilesResult] = await Promise.all([
     supabase.auth.getUser(),
     supabase.from("moments").select("id,user_id,title,zone,image_url,context,created_at").order("created_at", { ascending: false }),
     supabase.from("captions").select("id,moment_id,caption_text"),
     supabase.from("caption_votes").select("id,moment_id,caption_id"),
     supabase.from("moment_ratings").select("id,user_id,moment_id,value,created_at,updated_at"),
+    supabase.from("profiles").select("id,first_name,last_name,avatar_url"),
   ]);
 
   const moments = momentsResult.data || [];
   const captions = captionsResult.data || [];
   const votes = votesResult.data || [];
   const ratings = ratingsResult.data || [];
+  const profiles = profilesResult.data || [];
   const zoneCount = new Set(moments.map((moment) => moment.zone)).size;
   const feedMoments = moments.map((moment) => {
     const winner = winningCaption(moment, captions, votes);
@@ -55,6 +57,14 @@ export default async function Home() {
     const summary = ratingSummary(moment.id, weeklyRatings);
     return { ...moment, caption: winner?.caption_text || "Caption deliberations pending.", ...summary };
   }).sort((a, b) => b.score - a.score || b.likes - a.likes).slice(0, 5);
+  const creatorLeaderboard = [...new Set(moments.map((moment) => moment.user_id))].map((creatorId) => {
+    const creatorMoments = moments.filter((moment) => moment.user_id === creatorId);
+    const creatorRatings = weeklyRatings.filter((rating) => creatorMoments.some((moment) => moment.id === rating.moment_id));
+    const profile = profiles.find((profile) => profile.id === creatorId);
+    const likes = creatorRatings.filter((rating) => rating.value === 1).length;
+    const dislikes = creatorRatings.filter((rating) => rating.value === -1).length;
+    return { id: creatorId, name: [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Campus creator", avatar: profile?.avatar_url, posts: creatorMoments.length, likes, score: likes - dislikes };
+  }).sort((a, b) => b.score - a.score || b.likes - a.likes || b.posts - a.posts).slice(0, 5);
 
   return (
     <main className="site-shell">
@@ -86,6 +96,13 @@ export default async function Home() {
         <div><strong>{votes.length + ratings.length}</strong><span>votes cast</span></div>
         <div><strong>{zoneCount}</strong><span>zones active</span></div>
       </section>
+      <section className="map-section" id="signals">
+        <div className="section-heading">
+          <div><p className="kicker">The survival map</p><h2>Walk through what campus is talking about.</h2></div>
+          <p>Follow the paths between campus spaces. Every blinking pin opens a student submission from that part of college life.</p>
+        </div>
+        <CampusMap moments={moments} />
+      </section>
       <section className="vote-section" id="vote">
         <div className="section-heading">
           <div><p className="kicker">Quick vote</p><h2>One meme. One reaction. Keep moving.</h2></div>
@@ -93,7 +110,7 @@ export default async function Home() {
         </div>
         {feedMoments.length ? <MomentFeed moments={feedMoments} signedIn={Boolean(user)} /> : <p>No memes are ready for voting yet.</p>}
       </section>
-      <section className="leaderboard-section" id="leaderboard">
+      <section className="leaderboard-section meme-leaderboard" id="leaderboard">
         <div className="leaderboard-head"><div><p className="kicker">This week</p><h2>Campus top five</h2></div><span>Resets every Monday</span></div>
         <div className="leaderboard-list">
           {leaderboard.map((moment, index) => <Link className="leaderboard-row" href={`/moments/${moment.id}`} key={moment.id}>
@@ -104,43 +121,20 @@ export default async function Home() {
           </Link>)}
         </div>
       </section>
-      <section className="map-section" id="signals">
+      <section className="creator-board" id="creators">
         <div className="section-heading">
-          <div><p className="kicker">The survival map</p><h2>Where is campus losing it today?</h2></div>
-          <p>Each blinking signal is a real submission. Open one and choose the caption that belongs in the official record.</p>
+          <div><p className="kicker">Creator standings</p><h2>The accounts making campus laugh.</h2></div>
+          <p>Weekly points come from likes and dislikes across every meme an account has posted.</p>
         </div>
-        <CampusMap moments={moments} />
-      </section>
-      <section className="latest-section archive-section">
-        <div className="section-heading compact"><div><p className="kicker">Latest field notes</p><h2>Fresh from the archive</h2></div></div>
-        {moments.length === 0 ? (
-          <div className="empty-state">
-            <span className="empty-signal">✦</span>
-            <h3>The archive is quiet—for now.</h3>
-            <p>Report the first campus moment and let AI put it on the record.</p>
-            <Link className="button primary" href={user ? "/generate" : "/login"}>Report a moment</Link>
-          </div>
-        ) : (
-          <div className="moment-grid">
-            {moments.slice(0, 6).map((moment, index) => {
-              const winner = winningCaption(moment, captions, votes);
-              return (
-                <Link className={`moment-card tilt-${index % 3}`} href={`/moments/${moment.id}`} key={moment.id}>
-                  <div className="photo-wrap">
-                    <Image src={moment.image_url} alt={moment.title} fill sizes="(max-width: 760px) 100vw, 33vw" unoptimized />
-                    <span className="zone-chip">{moment.zone}</span>
-                  </div>
-                  <div className="moment-card-copy">
-                    <p className="case-number">Signal {String(index + 1).padStart(3, "0")}</p>
-                    <h3>{moment.title}</h3>
-                    <p className="winning-line">“{winner?.caption_text || "Caption deliberations pending."}”</p>
-                    <div className="card-footer"><span>{winner?.votes || 0} verdicts</span><span>Open record →</span></div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+        <div className="creator-list">
+          {creatorLeaderboard.map((creator, index) => <article className="creator-row" key={creator.id}>
+            <span className="creator-rank">{index === 0 ? "★" : String(index + 1).padStart(2, "0")}</span>
+            {creator.avatar ? <Image className="creator-avatar" src={creator.avatar} alt="" width={58} height={58} unoptimized /> : <span className="creator-avatar fallback">{creator.name[0]}</span>}
+            <span className="creator-name"><b>{creator.name}</b><small>{creator.posts} {creator.posts === 1 ? "meme" : "memes"} posted</small></span>
+            <span className="creator-likes">{creator.likes} likes</span>
+            <strong className="creator-score">{creator.score >= 0 ? "+" : ""}{creator.score}</strong>
+          </article>)}
+        </div>
       </section>
     </main>
   );

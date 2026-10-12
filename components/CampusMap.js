@@ -14,8 +14,12 @@ export default function CampusMap({ moments }) {
   return (
     <div className="campus-map">
       <div className="map-grid" aria-hidden="true" /><div className="map-river" aria-hidden="true"><span>HUDSON RIVER</span></div>
-      <div className="campus-gates" aria-hidden="true"><span>116TH ST</span><b>COLUMBIA CAMPUS</b></div>
-      <div className="map-path path-one" aria-hidden="true" /><div className="map-path path-two" aria-hidden="true" />
+      <div className="campus-boundary" aria-hidden="true"><span>116TH STREET GATES</span></div>
+      <div className="college-walk walk-main" aria-hidden="true" /><div className="college-walk walk-cross" aria-hidden="true" />
+      <div className="college-walk walk-north" aria-hidden="true" /><div className="college-walk walk-south" aria-hidden="true" />
+      <div className="campus-lawn lawn-one" aria-hidden="true" /><div className="campus-lawn lawn-two" aria-hidden="true" />
+      <div className="campus-plaza" aria-hidden="true"><span>LOW PLAZA</span></div>
+      <div className="campus-trees" aria-hidden="true">●　●　●　●　●　●</div>
       {zones.map((zone) => (
         <div className={`map-zone ${zone.className}`} key={zone.key}>
           <span className="zone-icon">{zone.icon}</span><strong>{zone.label}</strong>
