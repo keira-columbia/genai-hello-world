@@ -13,7 +13,8 @@ const zones = [
 export default function CampusMap({ moments }) {
   return (
     <div className="campus-map">
-      <div className="map-grid" aria-hidden="true" /><div className="map-river" aria-hidden="true"><span>THE CITY</span></div>
+      <div className="map-grid" aria-hidden="true" /><div className="map-river" aria-hidden="true"><span>HUDSON RIVER</span></div>
+      <div className="campus-gates" aria-hidden="true"><span>116TH ST</span><b>COLUMBIA CAMPUS</b></div>
       <div className="map-path path-one" aria-hidden="true" /><div className="map-path path-two" aria-hidden="true" />
       {zones.map((zone) => (
         <div className={`map-zone ${zone.className}`} key={zone.key}>
@@ -27,7 +28,7 @@ export default function CampusMap({ moments }) {
         </Link>
       ))}
       {!moments.length && <div className="map-empty-note"><strong>No active signals</strong><span>The first field report will appear here.</span></div>}
-      <div className="map-legend"><span className="legend-dot" /> Live student signal</div>
+      <div className="map-legend"><span className="legend-dot" /> Student submission</div>
     </div>
   );
 }
