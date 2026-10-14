@@ -9,7 +9,8 @@ export async function castVote(formData) {
   const { data: { user } } = await supabase.auth.getUser();
   const momentId = formData.get("momentId")?.toString();
   const captionId = formData.get("captionId")?.toString();
-  if (!user) redirect(`/login?next=${encodeURIComponent(`/moments/${momentId}`)}`);
+  const workspace = formData.get("workspace")?.toString() === "captions";
+  if (!user) redirect(`/login?next=${encodeURIComponent(workspace ? "/captions" : `/moments/${momentId}`)}`);
   if (!momentId || !captionId) redirect("/");
 
   const { data: caption } = await supabase.from("captions").select("id,moment_id").eq("id", captionId).eq("moment_id", momentId).maybeSingle();
@@ -19,5 +20,7 @@ export async function castVote(formData) {
   if (error) redirect(`/moments/${momentId}?error=${encodeURIComponent(error.message)}`);
   revalidatePath(`/moments/${momentId}`);
   revalidatePath("/");
+  revalidatePath("/captions");
+  if (workspace) return { ok: true };
   redirect(`/moments/${momentId}?voted=1`);
 }

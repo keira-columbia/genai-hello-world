@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { rateMoment } from "../app/ratings/actions";
 
-export default function MomentFeed({ moments, signedIn }) {
+export default function MomentFeed({ moments, signedIn, standalone = false }) {
   const [index, setIndex] = useState(0);
   const [ratings, setRatings] = useState(() => Object.fromEntries(moments.map((moment) => [moment.id, moment.userRating])));
   const [shared, setShared] = useState(false);
@@ -34,7 +34,7 @@ export default function MomentFeed({ moments, signedIn }) {
   }
 
   return (
-    <div className="voting-stage">
+    <div className={`voting-stage ${standalone ? "standalone" : ""}`}>
       <button className="feed-arrow" aria-label="Previous meme" onClick={() => setIndex((index - 1 + moments.length) % moments.length)}>←</button>
       <article className="voting-card">
         <div className="voting-progress"><span>MEME {index + 1} / {moments.length}</span><span>{moment.zone}</span></div>
@@ -50,7 +50,7 @@ export default function MomentFeed({ moments, signedIn }) {
             </> : <Link className="reaction signin-reaction" href={`/login?next=${encodeURIComponent("/")}`}>Sign in to vote</Link>}
             <button className="share-button" onClick={share}>{shared ? "Link copied!" : "Share ↗"}</button>
           </div>
-          <div className="feed-meta"><span>{moment.likes} likes · {moment.dislikes} dislikes</span><Link href={`/moments/${moment.id}`}>See all captions →</Link></div>
+          <div className="feed-meta"><span>{moment.likes} likes · {moment.dislikes} dislikes</span><Link href="/captions">Judge AI captions →</Link></div>
         </div>
       </article>
       <button className="feed-arrow" aria-label="Next meme" onClick={() => setIndex((index + 1) % moments.length)}>→</button>

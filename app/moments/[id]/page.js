@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import SiteHeader from "../../../components/SiteHeader";
 import SubmitButton from "../../../components/SubmitButton";
@@ -26,11 +27,11 @@ export default async function MomentPage({ params, searchParams }) {
   return (
     <main className="site-shell moment-page">
       <SiteHeader user={user} />
-      <Link className="back-link" href="/#signals">← Back to survival map</Link>
+      <Link className="back-link" href="/#campus-walk">← Back to campus walk</Link>
       <section className="case-layout">
         <div className="evidence-panel">
           <div className="evidence-head"><span>PHOTO EVIDENCE</span><span>{moment.zone.toUpperCase()}</span></div>
-          <div className="evidence-photo"><img src={moment.image_url} alt={moment.title} /></div>
+          <div className="evidence-photo"><Image src={moment.image_url} alt={moment.title} width={1200} height={900} unoptimized /></div>
           <div className="ai-observation"><span>AI VISUAL SCAN</span><p>{moment.image_description}</p></div>
         </div>
         <div className="verdict-panel">

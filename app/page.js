@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import SiteHeader from "../components/SiteHeader";
-import CampusMap from "../components/CampusMap";
-import MomentFeed from "../components/MomentFeed";
+import ImmersiveCampus from "../components/ImmersiveCampus";
 import { createClient } from "../lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -75,8 +74,8 @@ export default async function Home() {
           <h1>College is a survival story. <em>Caption it.</em></h1>
           <p className="hero-lede">Explore student-life sightings, choose the AI caption that gets it, or report a moment of your own.</p>
           <div className="hero-actions">
-            <a className="button primary" href="#vote">Start voting</a>
-            <Link className="button secondary" href={user ? "/generate" : "/login"}>Report a moment</Link>
+            <a className="button primary" href="#campus-walk">Enter campus</a>
+            <Link className="button secondary" href="/vote">Rate memes</Link>
           </div>
         </div>
         <aside className="dispatch-card" aria-label="How the archive works">
@@ -96,19 +95,16 @@ export default async function Home() {
         <div><strong>{votes.length + ratings.length}</strong><span>votes cast</span></div>
         <div><strong>{zoneCount}</strong><span>zones active</span></div>
       </section>
-      <section className="map-section" id="signals">
+      <section className="map-section immersive-section" id="campus-walk">
         <div className="section-heading">
-          <div><p className="kicker">The survival map</p><h2>Walk through what campus is talking about.</h2></div>
-          <p>Follow the paths between campus spaces. Every blinking pin opens a student submission from that part of college life.</p>
+          <div><p className="kicker">First-person campus walk</p><h2>Step inside the stories students are telling.</h2></div>
+          <p>Move between campus stops, discover live submissions, and open the moments attached to each place.</p>
         </div>
-        <CampusMap moments={moments} />
+        <ImmersiveCampus moments={moments} />
       </section>
-      <section className="vote-section" id="vote">
-        <div className="section-heading">
-          <div><p className="kicker">Quick vote</p><h2>One meme. One reaction. Keep moving.</h2></div>
-          <p>Rate each meme in seconds, open its full caption ballot, or send it to a friend.</p>
-        </div>
-        {feedMoments.length ? <MomentFeed moments={feedMoments} signedIn={Boolean(user)} /> : <p>No memes are ready for voting yet.</p>}
+      <section className="two-workspaces">
+        <Link className="workspace-card meme-space" href="/vote"><span>01 · RATE THE MEME</span><h2>Funny or<br/>not for me?</h2><p>Move through one campus meme at a time and react in seconds.</p><b>Enter meme deck →</b></Link>
+        <Link className="workspace-card caption-space" href="/captions"><span>02 · JUDGE THE WRITING</span><h2>Which caption<br/>wins?</h2><p>See four AI captions for the same image and crown the sharpest one.</p><b>Enter caption lab →</b></Link>
       </section>
       <section className="leaderboard-section meme-leaderboard" id="leaderboard">
         <div className="leaderboard-head"><div><p className="kicker">This week</p><h2>Campus top five</h2></div><span>Resets every Monday</span></div>

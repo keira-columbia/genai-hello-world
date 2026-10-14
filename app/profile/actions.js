@@ -11,16 +11,17 @@ export async function updateProfile(formData) {
   if (!user) redirect("/login");
 
   const firstName = formData.get("firstName")?.toString().trim() || null;
+  const destination = formData.get("returnTo")?.toString() === "/account" ? "/account" : "/profile";
   const lastName = formData.get("lastName")?.toString().trim() || null;
   const photo = formData.get("photo");
   let avatarUrl = formData.get("currentAvatar")?.toString() || null;
   if (photo && photo.size > 0) {
     if (!["image/jpeg", "image/png", "image/webp"].includes(photo.type)) {
-      redirect("/profile?error=Please%20choose%20an%20image%20file");
+      redirect(`${destination}?error=Please%20choose%20an%20image%20file`);
     }
 
     if (photo.size > 5 * 1024 * 1024) {
-      redirect("/profile?error=The%20photo%20must%20be%205MB%20or%20smaller");
+      redirect(`${destination}?error=The%20photo%20must%20be%205MB%20or%20smaller`);
     }
 
     const extension = photo.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -30,7 +31,7 @@ export async function updateProfile(formData) {
       .upload(path, photo, { contentType: photo.type, upsert: true });
 
     if (uploadError) {
-      redirect(`/profile?error=${encodeURIComponent(uploadError.message)}`);
+      redirect(`${destination}?error=${encodeURIComponent(uploadError.message)}`);
     }
 
     const { data } = supabase.storage.from("avatars").getPublicUrl(path);
@@ -45,9 +46,10 @@ export async function updateProfile(formData) {
   }).eq("id", user.id);
 
   if (error) {
-    redirect(`/profile?error=${encodeURIComponent(error.message)}`);
+    redirect(`${destination}?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/profile");
-  redirect("/profile?saved=1");
+  revalidatePath("/account");
+  redirect(`${destination}?saved=1`);
 }
