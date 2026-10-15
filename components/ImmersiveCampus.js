@@ -25,20 +25,23 @@ export default function ImmersiveCampus({ moments }) {
   const [index, setIndex] = useState(0);
   const [pan, setPan] = useState(0);
   const [walking, setWalking] = useState(0);
+  const [walkingTo, setWalkingTo] = useState("");
   const drag = useRef(null);
   const walkRef = useRef(null);
   const stop = stops[index];
   const visible = useMemo(() => moments.filter((m) => m.zone === stop.zone).slice(0,3), [moments, stop.zone]);
   const move = (step) => {
     if (walking) return;
+    const next = (index + step + stops.length) % stops.length;
+    setWalkingTo(stops[next].zone);
     setWalking(step);
     window.setTimeout(() => {
-      setIndex((current) => (current + step + stops.length) % stops.length);
+      setIndex(next);
       setPan(0);
-      window.setTimeout(() => setWalking(0), 360);
+      window.setTimeout(() => { setWalking(0); setWalkingTo(""); }, 360);
     }, 260);
   };
-  const selectStop = (next) => { if (next === index || walking) return; setWalking(next > index ? 1 : -1); window.setTimeout(() => { setIndex(next); setPan(0); window.setTimeout(() => setWalking(0), 360); }, 260); };
+  const selectStop = (next) => { if (next === index || walking) return; setWalkingTo(stops[next].zone); setWalking(next > index ? 1 : -1); window.setTimeout(() => { setIndex(next); setPan(0); window.setTimeout(() => { setWalking(0); setWalkingTo(""); }, 360); }, 260); };
   const startLook = (event) => { drag.current = { x:event.clientX, pan }; event.currentTarget.setPointerCapture(event.pointerId); };
   const lookAround = (event) => { if (!drag.current) return; setPan(Math.max(-16, Math.min(16, drag.current.pan + (event.clientX - drag.current.x) / 18))); };
   const stopLook = () => { drag.current = null; };
@@ -59,15 +62,20 @@ export default function ImmersiveCampus({ moments }) {
     <div key={stop.id} className="walk-photo" role="img" aria-label={`Street-level photograph of ${stop.eyebrow}`} style={{backgroundImage:`url("${stop.image}")`, backgroundPosition:`calc(${stop.position.split(" ")[0]} + ${pan}%) ${stop.position.split(" ")[1]}`}} onPointerDown={startLook} onPointerMove={lookAround} onPointerUp={stopLook} onPointerCancel={stopLook}/>
     <div className="walk-hud">
       <div className="walk-status"><span className="live-pulse"/> LIVE CAMPUS WALK <b>{stop.accent}</b></div>
-      <div className="walk-look">DRAG TO LOOK · USE ARROW KEYS TO WALK</div>
-      <div className="walk-reticle" aria-hidden="true"><i/><i/></div>
+      <div className="walk-look">CLICK HERE, THEN USE ↑ ↓ ← →</div>
+      {walkingTo && <div className="walking-message" aria-live="polite">Walking to {walkingTo}…</div>}
       <div className="walk-copy"><p>{stop.eyebrow}</p><h3>{stop.title}</h3><span>{stop.copy}</span></div>
       <div className="walk-hotspots">
         {visible.length ? visible.map((moment, i) => <Link className={`walk-hotspot hotspot-${i}`} href={`/moments/${moment.id}`} key={moment.id}><i>{i+1}</i><span><b>{moment.title}</b>Open signal →</span></Link>) : <Link className="walk-hotspot hotspot-empty" href="/generate"><i>＋</i><span><b>No signal here yet</b>Report the first →</span></Link>}
       </div>
       <button className="walk-control previous" aria-label="Walk to previous campus stop" onClick={()=>move(-1)}>←<small>{stop.left}</small></button>
       <button className="walk-control next" aria-label="Walk to next campus stop" onClick={()=>move(1)}><small>{stop.right}</small>→</button>
-      <div className="walk-keys" aria-hidden="true"><span>↑</span><span>←</span><span>↓</span><span>→</span><b>WALK</b></div>
+      <div className="walk-keys" aria-label="Directional campus controls">
+        <button className="key-up" onClick={()=>selectStop(routes[index].ArrowUp)}><kbd>↑</kbd><small>{stops[routes[index].ArrowUp].zone}</small></button>
+        <button className="key-left" onClick={()=>selectStop(routes[index].ArrowLeft)}><kbd>←</kbd><small>{stops[routes[index].ArrowLeft].zone}</small></button>
+        <button className="key-down" onClick={()=>selectStop(routes[index].ArrowDown)}><kbd>↓</kbd><small>{stops[routes[index].ArrowDown].zone}</small></button>
+        <button className="key-right" onClick={()=>selectStop(routes[index].ArrowRight)}><kbd>→</kbd><small>{stops[routes[index].ArrowRight].zone}</small></button>
+      </div>
       <div className="walk-compass">N<span>◆</span></div>
       <a className="walk-credit" href={stop.source} target="_blank" rel="noreferrer">{stop.credit}</a>
       <div className="walk-minimap" aria-label="Choose campus location"><div className={`mini-route marker-${index}`}><i/></div>{stops.map((item,i)=><button className={i===index?"active":""} aria-label={`Walk to ${item.zone}`} key={item.id} onClick={()=>selectStop(i)}><span/>{item.zone}</button>)}</div>
