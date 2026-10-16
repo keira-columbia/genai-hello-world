@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import SiteHeader from "../components/SiteHeader";
-import ImmersiveCampus from "../components/ImmersiveCampus";
+import CampusMap from "../components/CampusMap";
 import { createClient } from "../lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -95,12 +95,12 @@ export default async function Home() {
         <div><strong>{votes.length + ratings.length}</strong><span>votes cast</span></div>
         <div><strong>{zoneCount}</strong><span>zones active</span></div>
       </section>
-      <section className="map-section immersive-section" id="campus-walk">
+      <section className="map-section" id="campus-walk">
         <div className="section-heading">
-          <div><p className="kicker">First-person campus walk</p><h2>Step inside the stories students are telling.</h2></div>
-          <p>Move between campus stops, discover live submissions, and open the moments attached to each place.</p>
+          <div><p className="kicker">The survival map</p><h2>Where is campus losing it today?</h2></div>
+          <p>Select a place to see its photo and stories. Every blinking signal opens a real student submission.</p>
         </div>
-        <ImmersiveCampus moments={moments} />
+        <CampusMap moments={moments} />
       </section>
       <section className="two-workspaces">
         <Link className="workspace-card meme-space" href="/vote"><span>01 · RATE THE MEME</span><h2>Funny or<br/>not for me?</h2><p>Move through one campus meme at a time and react in seconds.</p><b>Enter meme deck →</b></Link>
