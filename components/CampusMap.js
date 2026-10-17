@@ -13,9 +13,10 @@ const zones = [
 ];
 
 export default function CampusMap({ moments }) {
-  const [active, setActive] = useState("Library");
+  const [active, setActive] = useState(null);
   const zone = zones.find((item) => item.key === active);
-  const zoneMoments = moments.filter((moment) => moment.zone === active).slice(0, 3);
+  const allZoneMoments = moments.filter((moment) => moment.zone === active);
+  const zoneMoments = allZoneMoments.slice(0, 3);
 
   return <div className="campus-map interactive-map">
     <div className="map-grid" aria-hidden="true"/><div className="map-river" aria-hidden="true"><span>THE CITY</span></div>
@@ -28,7 +29,7 @@ export default function CampusMap({ moments }) {
 
     {zones.map((item) => {
       const count = moments.filter((moment) => moment.zone === item.key).length;
-      return <button className={`map-zone photo-zone ${item.className} ${active === item.key ? "active" : ""}`} key={item.key} onClick={()=>setActive(item.key)} aria-pressed={active === item.key}>
+      return <button className={`map-zone photo-zone ${item.className} ${active === item.key ? "active" : ""}`} key={item.key} onClick={()=>setActive(active === item.key ? null : item.key)} aria-pressed={active === item.key}>
         <span className="zone-photo" style={{backgroundImage:`url("${item.image}")`, backgroundPosition:item.position}}><i>{item.icon}</i></span>
         <span className="zone-copy"><strong>{item.label}</strong><small>{count} {count === 1 ? "signal" : "signals"}</small></span>
       </button>;
@@ -38,13 +39,18 @@ export default function CampusMap({ moments }) {
       <span className="signal-wave"/><span className="signal-dot"/><span className="signal-label">{moment.title}</span>
     </Link>)}
 
-    <aside className="map-preview" aria-live="polite">
-      <div className="map-preview-photo" style={{backgroundImage:`linear-gradient(180deg,transparent 35%,#07120dcf),url("${zone.image}")`, backgroundPosition:zone.position}}><span>{zone.icon}</span><b>{zone.label}</b></div>
-      <p>{zone.note}</p>
-      <div className="map-preview-links">
-        {zoneMoments.length ? zoneMoments.map((moment)=><Link href={`/moments/${moment.id}`} key={moment.id}>{moment.title}<span>OPEN →</span></Link>) : <Link href="/generate">Be the first to report here <span>CREATE →</span></Link>}
-      </div>
-    </aside>
+    {zone && <>
+      <button className="map-preview-scrim" aria-label="Close location preview" onClick={()=>setActive(null)}/>
+      <aside className="map-preview" aria-live="polite">
+        <button className="map-preview-close" aria-label="Close location preview" onClick={()=>setActive(null)}>×</button>
+        <div className="map-preview-photo" style={{backgroundImage:`linear-gradient(180deg,transparent 35%,#07120dcf),url("${zone.image}")`, backgroundPosition:zone.position}}><span>{zone.icon}</span><div><small>Currently viewing</small><b>{zone.label} stories</b></div></div>
+        <p>{zone.note}</p>
+        <div className="map-preview-links">
+          {zoneMoments.length ? zoneMoments.map((moment)=><Link href={`/moments/${moment.id}`} key={moment.id}>{moment.title}<span>OPEN →</span></Link>) : <Link href="/generate">Be the first to report here <span>CREATE →</span></Link>}
+        </div>
+        {allZoneMoments.length > 3 && <p className="map-preview-count">Showing 3 of {allZoneMoments.length} stories. Select the blinking pins to open the others.</p>}
+      </aside>
+    </>}
     <div className="map-legend"><span className="legend-dot"/> Live student submission · Select a place</div>
   </div>;
 }
