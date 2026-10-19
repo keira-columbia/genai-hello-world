@@ -21,10 +21,10 @@ export default function CampusMap({ moments }) {
   return <div className="campus-map interactive-map">
     <div className="map-grid" aria-hidden="true"/><div className="map-river" aria-hidden="true"><span>THE CITY</span></div>
     <div className="campus-boundary" aria-hidden="true"><span>116TH STREET GATES</span></div>
-    <div className="college-walk walk-main" aria-hidden="true"/><div className="college-walk walk-cross" aria-hidden="true"/>
+    <div className="college-walk walk-main" aria-hidden="true"><span>COLLEGE WALK · 116TH STREET</span></div><div className="college-walk walk-cross" aria-hidden="true"/>
     <div className="college-walk walk-north" aria-hidden="true"/><div className="college-walk walk-south" aria-hidden="true"/>
     <div className="campus-lawn lawn-one" aria-hidden="true"/><div className="campus-lawn lawn-two" aria-hidden="true"/>
-    <div className="campus-plaza" aria-hidden="true"><span>LOW PLAZA</span></div>
+    <div className="campus-plaza" aria-hidden="true"><b>LOW PLAZA</b></div>
     <div className="campus-trees" aria-hidden="true">●　●　●　●　●　●</div>
 
     {zones.map((item) => {
