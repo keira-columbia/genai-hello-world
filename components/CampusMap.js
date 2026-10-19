@@ -25,7 +25,6 @@ export default function CampusMap({ moments }) {
     <div className="college-walk walk-north" aria-hidden="true"/><div className="college-walk walk-south" aria-hidden="true"/>
     <div className="campus-lawn lawn-one" aria-hidden="true"/><div className="campus-lawn lawn-two" aria-hidden="true"/>
     <div className="campus-plaza" aria-hidden="true"><span>🏛️</span><b>LOW PLAZA</b></div>
-    <div className="campus-trees" aria-hidden="true">●　●　●　●　●　●</div>
 
     {zones.map((item) => {
       const count = moments.filter((moment) => moment.zone === item.key).length;
