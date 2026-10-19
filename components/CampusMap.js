@@ -6,7 +6,7 @@ import { useState } from "react";
 const zones = [
   { key:"Library", className:"zone-library", icon:"📚", label:"Library", note:"All-nighters and printer emergencies", image:"https://upload.wikimedia.org/wikipedia/commons/a/aa/Butler_Library_Columbia_University.jpg", position:"50% 52%" },
   { key:"Dorms", className:"zone-dorms", icon:"🛏️", label:"Dorms", note:"Roommates, laundry and midnight decisions", image:"https://upload.wikimedia.org/wikipedia/commons/f/f3/John_Jay_Hall_Columbia_University.jpg", position:"50% 45%" },
-  { key:"Dining", className:"zone-dining", icon:"🍽️", label:"Dining", note:"Lines, trays and fiercely held opinions", image:"https://upload.wikimedia.org/wikipedia/commons/c/c2/John_Jay_lobby.jpg", position:"50% 48%" },
+  { key:"Dining", className:"zone-dining", icon:"🍽️", label:"Dining", note:"Lines, trays and fiercely held opinions", image:"https://dining.columbia.edu/sites/dining.columbia.edu/files/styles/cu_crop/public/content/John%20Jay%20Location%20Photos/Campus%20Services%20116.JPG.webp?itok=jrsMp5hN", position:"50% 52%" },
   { key:"Classroom", className:"zone-classroom", icon:"✏️", label:"Classrooms", note:"The 8:40 a.m. chapter of campus life", image:"https://upload.wikimedia.org/wikipedia/commons/e/e4/College_Walk_%28116th_Street%29%2C_Columbia_University_%286337955425%29.jpg", position:"50% 54%" },
   { key:"Subway", className:"zone-subway", icon:"🚇", label:"Subway", note:"Commutes, delays and downtown plans", image:"https://upload.wikimedia.org/wikipedia/commons/e/ee/116th_Street_-_Entrance.jpg", position:"50% 52%" },
   { key:"City", className:"zone-city", icon:"🗽", label:"NYC weekends", note:"The stories that happen beyond the gates", image:"https://upload.wikimedia.org/wikipedia/commons/6/68/Central_Park_%2810164%29.jpg", position:"50% 45%" },
@@ -24,7 +24,7 @@ export default function CampusMap({ moments }) {
     <div className="college-walk walk-main" aria-hidden="true"><span>COLLEGE WALK · 116TH STREET</span></div><div className="college-walk walk-cross" aria-hidden="true"/>
     <div className="college-walk walk-north" aria-hidden="true"/><div className="college-walk walk-south" aria-hidden="true"/>
     <div className="campus-lawn lawn-one" aria-hidden="true"/><div className="campus-lawn lawn-two" aria-hidden="true"/>
-    <div className="campus-plaza" aria-hidden="true"><b>LOW PLAZA</b></div>
+    <div className="campus-plaza" aria-hidden="true"><span>🏛️</span><b>LOW PLAZA</b></div>
     <div className="campus-trees" aria-hidden="true">●　●　●　●　●　●</div>
 
     {zones.map((item) => {
