@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }) {
         <p className="kicker">Join the field team</p><h1>Campus needs your verdict.</h1>
         <p>Sign in with Google to report real moments, generate AI captions, vote, and keep a private survival record.</p>
         {params?.error && <p className="message error">{params.error}</p>}
-        <form action={signInWithGoogle}><button className="google-button" type="submit"><span>G</span> Continue with Google</button></form>
+        <form action={signInWithGoogle}><input type="hidden" name="next" value={params?.next || "/profile"} /><button className="google-button" type="submit"><span>G</span> Continue with Google</button></form>
         <small>Browsing stays public. Creating and voting require an account.</small>
       </section>
       <Link className="back-link" href="/">← Return to the map</Link>

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "../../../lib/supabase/server";
 
 export async function GET(request) {
@@ -10,7 +11,11 @@ export async function GET(request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${origin}/profile`);
+      const cookieStore = await cookies();
+      const requestedNext = cookieStore.get("oauth_next")?.value;
+      const next = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/profile";
+      cookieStore.delete("oauth_next");
+      return NextResponse.redirect(`${origin}${next}`);
     }
   }
 
